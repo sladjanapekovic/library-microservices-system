@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  knjige-service:
+    build: .
+    container_name: knjige-service
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app

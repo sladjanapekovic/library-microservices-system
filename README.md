@@ -46,3 +46,18 @@ library-microservices-system
 └── README.md
 
 Each folder represents a separate component of the system. The microservices are organized according to business domains to follow the principles of Clean Architecture and microservices design.
+
+## Communication between services
+
+The system components communicate through REST APIs.
+
+- web-ui communicates with the uporabniki microservice for user registration, authentication and user data access
+- web-ui communicates with the knjige microservice for browsing the catalog, searching books and checking availability
+- web-ui communicates with the izposoja microservice for borrowing, reserving and returning books
+
+The izposoja microservice may also communicate with:
+- knjige, to verify whether a book exists and is available
+- uporabniki, to verify whether the user exists and can borrow books
+
+This communication model keeps the services loosely coupled and allows each microservice to remain focused on its own business domain.
+

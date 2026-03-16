@@ -4,7 +4,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from .database import Base, engine, SessionLocal
-from . import models, schemas
+from . import schemas, repository
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -35,63 +35,62 @@ def root():
 @app.get("/books", response_model=list[schemas.BookResponse])
 def get_books(db: Session = Depends(get_db)):
     logger.info("Fetching all books")
-    return db.query(models.Book).all()
+    return repository.get_all_books(db)
 
 
 @app.get("/books/{book_id}", response_model=schemas.BookResponse)
 def get_book(book_id: int, db: Session = Depends(get_db)):
     logger.info(f"Fetching book with id={book_id}")
-    book = db.query(models.Book).filter(models.Book.id == book_id).first()
+    book = repository.get_book_by_id(db, book_id)
+
     if not book:
         logger.warning(f"Book with id={book_id} not found")
         raise HTTPException(status_code=404, detail="Book not found")
+
     return book
 
 
 @app.post("/books", response_model=schemas.BookResponse)
 def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
-    logger.info(f"Creating book with title='{book.title}'")
-    db_book = models.Book(
-        title=book.title,
-        author=book.author,
-        genre=book.genre,
-        available_copies=book.available_copies
+    logger.info(f"Creating book with title={book.title}")
+
+    return repository.create_book(
+        db,
+        book.title,
+        book.author,
+        book.genre,
+        book.available_copies
     )
-    db.add(db_book)
-    db.commit()
-    db.refresh(db_book)
-    logger.info(f"Book created with id={db_book.id}")
-    return db_book
 
 
 @app.put("/books/{book_id}", response_model=schemas.BookResponse)
 def update_book(book_id: int, updated_book: schemas.BookCreate, db: Session = Depends(get_db)):
     logger.info(f"Updating book with id={book_id}")
-    book = db.query(models.Book).filter(models.Book.id == book_id).first()
+
+    book = repository.update_book(
+        db,
+        book_id,
+        updated_book.title,
+        updated_book.author,
+        updated_book.genre,
+        updated_book.available_copies
+    )
+
     if not book:
         logger.warning(f"Book with id={book_id} not found for update")
         raise HTTPException(status_code=404, detail="Book not found")
 
-    book.title = updated_book.title
-    book.author = updated_book.author
-    book.genre = updated_book.genre
-    book.available_copies = updated_book.available_copies
-
-    db.commit()
-    db.refresh(book)
-    logger.info(f"Book with id={book_id} updated successfully")
     return book
 
 
 @app.delete("/books/{book_id}")
 def delete_book(book_id: int, db: Session = Depends(get_db)):
     logger.info(f"Deleting book with id={book_id}")
-    book = db.query(models.Book).filter(models.Book.id == book_id).first()
+
+    book = repository.delete_book(db, book_id)
+
     if not book:
         logger.warning(f"Book with id={book_id} not found for deletion")
         raise HTTPException(status_code=404, detail="Book not found")
 
-    db.delete(book)
-    db.commit()
-    logger.info(f"Book with id={book_id} deleted successfully")
     return {"message": "Book deleted successfully"}

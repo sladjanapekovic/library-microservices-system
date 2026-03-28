@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 public class BorrowingController {
 
     private final BorrowingRepository repository;
+    private final MessageProducer messageProducer;
 
-    public BorrowingController(BorrowingRepository repository) {
+    public BorrowingController(BorrowingRepository repository, MessageProducer messageProducer) {
         this.repository = repository;
+        this.messageProducer = messageProducer;
     }
 
     // GET all
@@ -42,7 +44,10 @@ public class BorrowingController {
 
         System.out.println("Creating borrowing for user " + borrowing.getUserId());
 
-        return repository.save(borrowing);
+        return repository.save(borrowing)
+                .doOnSuccess(savedBorrowing ->
+                        messageProducer.sendBorrowingCreatedMessage(savedBorrowing)
+                );
     }
 
     // RETURN book

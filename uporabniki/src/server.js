@@ -2,6 +2,8 @@ const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
 const path = require("path");
 
+const { pool, initializeDatabase } = require("./db");
+
 const PROTO_PATH = path.join(__dirname, "../proto/user.proto");
 
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
@@ -14,70 +16,106 @@ const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
 
 const userProto = grpc.loadPackageDefinition(packageDefinition).uporabniki;
 
-// Za sada ćemo koristiti privremenu listu korisnika,
-// kasnije ćemo to zameniti PostgreSQL bazom.
-let users = [];
-let currentId = 1;
+// CREATE
+async function createUser(call, callback) {
+  try {
+    const { username, email } = call.request;
 
-function createUser(call, callback) {
-  const newUser = {
-    id: currentId++,
-    username: call.request.username,
-    email: call.request.email,
-  };
+    const result = await pool.query(
+      "INSERT INTO users (username, email) VALUES ($1, $2) RETURNING *",
+      [username, email]
+    );
 
-  users.push(newUser);
-  callback(null, { user: newUser });
-}
-
-function getUser(call, callback) {
-  const user = users.find((u) => u.id === call.request.id);
-
-  if (!user) {
-    return callback({
-      code: grpc.status.NOT_FOUND,
-      details: "User not found",
-    });
+    callback(null, { user: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    callback(err);
   }
-
-  callback(null, { user });
 }
 
-function getAllUsers(call, callback) {
-  callback(null, { users });
-}
+// GET ONE
+async function getUser(call, callback) {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM users WHERE id = $1",
+      [call.request.id]
+    );
 
-function updateUser(call, callback) {
-  const user = users.find((u) => u.id === call.request.id);
+    if (result.rows.length === 0) {
+      return callback({
+        code: grpc.status.NOT_FOUND,
+        details: "User not found",
+      });
+    }
 
-  if (!user) {
-    return callback({
-      code: grpc.status.NOT_FOUND,
-      details: "User not found",
-    });
+    callback(null, { user: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    callback(err);
   }
-
-  user.username = call.request.username;
-  user.email = call.request.email;
-
-  callback(null, { user });
 }
 
-function deleteUser(call, callback) {
-  const index = users.findIndex((u) => u.id === call.request.id);
+// GET ALL
+async function getAllUsers(call, callback) {
+  try {
+    const result = await pool.query("SELECT * FROM users");
 
-  if (index === -1) {
-    return callback({
-      code: grpc.status.NOT_FOUND,
-      details: "User not found",
-    });
+    callback(null, { users: result.rows });
+  } catch (err) {
+    console.error(err);
+    callback(err);
   }
-
-  users.splice(index, 1);
-  callback(null, { message: "User deleted successfully" });
 }
 
-function main() {
+// UPDATE
+async function updateUser(call, callback) {
+  try {
+    const { id, username, email } = call.request;
+
+    const result = await pool.query(
+      "UPDATE users SET username = $1, email = $2 WHERE id = $3 RETURNING *",
+      [username, email, id]
+    );
+
+    if (result.rows.length === 0) {
+      return callback({
+        code: grpc.status.NOT_FOUND,
+        details: "User not found",
+      });
+    }
+
+    callback(null, { user: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    callback(err);
+  }
+}
+
+// DELETE
+async function deleteUser(call, callback) {
+  try {
+    const result = await pool.query(
+      "DELETE FROM users WHERE id = $1 RETURNING *",
+      [call.request.id]
+    );
+
+    if (result.rows.length === 0) {
+      return callback({
+        code: grpc.status.NOT_FOUND,
+        details: "User not found",
+      });
+    }
+
+    callback(null, { message: "User deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    callback(err);
+  }
+}
+
+async function main() {
+  await initializeDatabase();
+
   const server = new grpc.Server();
 
   server.addService(userProto.UserService.service, {
@@ -90,7 +128,7 @@ function main() {
 
   const address = "0.0.0.0:50051";
 
-  server.bindAsync(address, grpc.ServerCredentials.createInsecure(), (error, port) => {
+  server.bindAsync(address, grpc.ServerCredentials.createInsecure(), (error) => {
     if (error) {
       console.error("Failed to start gRPC server:", error);
       return;

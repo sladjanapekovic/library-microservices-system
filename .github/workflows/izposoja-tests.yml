@@ -1,0 +1,32 @@
+name: Run tests for izposoja microservice
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  test-izposoja:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: izposoja
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Run unit tests
+        run: mvn test

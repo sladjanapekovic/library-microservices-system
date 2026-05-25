@@ -1,0 +1,67 @@
+name: Build and publish Docker images
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  dockerhub:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - name: knjige
+            context: ./knjige
+            image: knjige-service
+
+          - name: uporabniki
+            context: ./uporabniki
+            image: uporabniki-service
+
+          - name: izposoja
+            context: ./izposoja
+            image: izposoja-service
+
+          - name: web-gateway
+            context: ./web-gateway
+            image: web-gateway
+
+          - name: mobile-gateway
+            context: ./mobile-gateway
+            image: mobile-gateway
+
+          - name: frontend-shell
+            context: ./frontend-shell
+            image: frontend-shell
+
+          - name: books-frontend
+            context: ./books-frontend
+            image: books-frontend
+
+          - name: users-frontend
+            context: ./users-frontend
+            image: users-frontend
+
+          - name: borrowings-frontend
+            context: ./borrowings-frontend
+            image: borrowings-frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:latest

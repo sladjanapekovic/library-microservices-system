@@ -4,8 +4,8 @@ const axios = require("axios");
 const app = express();
 app.use(express.json());
 
-const KNJIGE_SERVICE_URL = "http://localhost:8000";
-const IZPOSOJA_SERVICE_URL = "http://localhost:8082";
+const KNJIGE_SERVICE_URL = process.env.KNJIGE_SERVICE_URL || "http://localhost:8000";
+const IZPOSOJA_SERVICE_URL = process.env.IZPOSOJA_SERVICE_URL || "http://localhost:8082";
 
 // Health check
 app.get("/", (req, res) => {

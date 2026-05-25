@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
   <title>Books Frontend</title>
 </head>
 <body>
-
   <h1>Books</h1>
 
   <h3>Add Book</h3>
-  <input id="title" placeholder="Title" />
-  <input id="author" placeholder="Author" />
-  <input id="genre" placeholder="Genre" />
-  <input id="copies" placeholder="Copies" type="number" />
-  <button onclick="addBook()">Add</button>
+  <input id="title" placeholder="Title">
+  <input id="author" placeholder="Author">
+  <input id="genre" placeholder="Genre">
+  <input id="copies" type="number" placeholder="Copies">
+  <button onclick="addBook()">Add Book</button>
 
-  <h3>All Books</h3>
-  <button onclick="loadBooks()">Refresh</button>
+  <h3>Books List</h3>
+  <button onclick="loadBooks()">Load Books</button>
   <ul id="booksList"></ul>
 
   <script src="app.js"></script>

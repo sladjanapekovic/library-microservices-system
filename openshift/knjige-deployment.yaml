@@ -1,6 +1,45 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: knjige-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: knjige-postgres
+  template:
+    metadata:
+      labels:
+        app: knjige-postgres
+    spec:
+      containers:
+        - name: knjige-postgres
+          image: postgres:15
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_DB
+              value: knjige_db
+          ports:
+            - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: knjige-postgres
+spec:
+  selector:
+    app: knjige-postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: knjige-service
 spec:
   replicas: 1
@@ -15,6 +54,9 @@ spec:
       containers:
         - name: knjige-service
           image: sladjanapekovic/knjige-service:latest
+          env:
+            - name: DATABASE_URL
+              value: postgresql://postgres:postgres@knjige-postgres:5432/knjige_db
           ports:
             - containerPort: 8000
 ---

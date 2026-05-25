@@ -52,6 +52,30 @@ app.post("/web/borrowings", async (req, res) => {
   }
 });
 
+// USERS - all
+app.get("/web/users", async (req, res) => {
+  res.json([
+    {
+      id: 1,
+      name: "Ana",
+      email: "ana@example.com"
+    },
+    {
+      id: 2,
+      name: "Marko",
+      email: "marko@example.com"
+    }
+  ]);
+});
+
+// USERS - create
+app.post("/web/users", async (req, res) => {
+  res.json({
+    message: "User created",
+    user: req.body
+  });
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Web gateway is running on http://localhost:${PORT}`);

@@ -11,44 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         include:
           - name: knjige
             context: ./knjige
             image: knjige-service
-
-          - name: uporabniki
-            context: ./uporabniki
-            image: uporabniki-service
-
-          - name: izposoja
-            context: ./izposoja
-            image: izposoja-service
-
-          - name: web-gateway
-            context: ./web-gateway
-            image: web-gateway
-
-          - name: mobile-gateway
-            context: ./mobile-gateway
-            image: mobile-gateway
-
-          - name: frontend-shell
-            context: ./frontend-shell
-            image: frontend-shell
-
-          - name: books-frontend
-            context: ./books-frontend
-            image: books-frontend
-
-          - name: users-frontend
-            context: ./users-frontend
-            image: users-frontend
-
-          - name: borrowings-frontend
-            context: ./borrowings-frontend
-            image: borrowings-frontend
 
     steps:
       - name: Checkout repository
@@ -66,5 +34,5 @@ jobs:
           context: ${{ matrix.context }}
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:v2
+            ${{ secrets.DOCKERHUB_USERNAME }}/knjige-service:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/knjige-service:v2

@@ -19,6 +19,10 @@ jobs:
             context: ./knjige
             image: knjige-service
 
+          - name: uporabniki
+            context: ./uporabniki
+            image: uporabniki-service      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -14,13 +14,13 @@ spec:
     spec:
       containers:
         - name: izposoja-postgres
-          image: postgres:15
+          image: bitnami/postgresql:latest
           env:
-            - name: POSTGRES_USER
+            - name: POSTGRESQL_USERNAME
               value: postgres
-            - name: POSTGRES_PASSWORD
+            - name: POSTGRESQL_PASSWORD
               value: postgres
-            - name: POSTGRES_DB
+            - name: POSTGRESQL_DATABASE
               value: izposoja_db
           ports:
             - containerPort: 5432
@@ -97,6 +97,7 @@ spec:
       containers:
         - name: izposoja-service
           image: sladjanapekovic/izposoja-service:latest
+          imagePullPolicy: Always
           env:
             - name: SPRING_R2DBC_URL
               value: r2dbc:postgresql://izposoja-postgres:5432/izposoja_db

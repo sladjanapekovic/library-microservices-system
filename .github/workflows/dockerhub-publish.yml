@@ -31,6 +31,18 @@ jobs:
             context: ./mobile-gateway
             image: mobile-gateway
 
+          - name: frontend-shell
+            context: ./frontend-shell
+            image: frontend-shell
+
+          - name: books-frontend
+            context: ./books-frontend
+            image: books-frontend
+
+          - name: users-frontend
+            context: ./users-frontend
+            image: users-frontend
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

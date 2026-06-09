@@ -26,7 +26,7 @@ SessionLocal = sessionmaker(
 Base = declarative_base()
 
 
-def wait_for_database(retries=10, delay=3):
+def wait_for_database(retries=30, delay=5):
     for attempt in range(retries):
         try:
             connection = engine.connect()

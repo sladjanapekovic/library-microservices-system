@@ -3,9 +3,8 @@ import logging
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from .database import Base, engine, SessionLocal
+from .database import Base, engine, SessionLocal, wait_for_database
 from . import schemas, repository
-from app.database import Base, engine, wait_for_database
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -1,6 +1,6 @@
-FROM nginx:alpine
+FROM bitnami/nginx:latest
 
-COPY index.html /usr/share/nginx/html/index.html
-COPY app.js /usr/share/nginx/html/app.js
+COPY index.html /app/index.html
+COPY app.js /app/app.js
 
-EXPOSE 80
+EXPOSE 8080

@@ -19,6 +19,10 @@ jobs:
             context: ./knjige
             image: knjige-service
 
+          - name: uporabniki
+            context: ./uporabniki
+            image: uporabniki-service
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,5 +39,4 @@ jobs:
           context: ${{ matrix.context }}
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/knjige-service:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/knjige-service:v5
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:latest

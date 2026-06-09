@@ -1,9 +1,6 @@
 const express = require("express");
 const axios = require("axios");
 
-const fs = require("fs");
-const path = require("path");
-
 const app = express();
 app.use(express.json());
 
@@ -11,10 +8,7 @@ const KNJIGE_SERVICE_URL = process.env.KNJIGE_SERVICE_URL || "http://localhost:8
 const IZPOSOJA_SERVICE_URL = process.env.IZPOSOJA_SERVICE_URL || "http://localhost:8082";
 
 function writeLog(message) {
-  const logPath = path.join(__dirname, "../../logs/gateway.log");
-  const logMessage = `${new Date().toISOString()} - ${message}\n`;
-
-  fs.appendFileSync(logPath, logMessage);
+  console.log(`${new Date().toISOString()} - ${message}`);
 }
 
 // Health check

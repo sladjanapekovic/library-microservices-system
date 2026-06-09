@@ -23,6 +23,10 @@ jobs:
             context: ./uporabniki
             image: uporabniki-service
 
+          - name: web-gateway
+            context: ./web-gateway
+            image: web-gateway
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -1,1 +1,36 @@
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mobile-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mobile-gateway
+  template:
+    metadata:
+      labels:
+        app: mobile-gateway
+    spec:
+      containers:
+        - name: mobile-gateway
+          image: sladjanapekovic/mobile-gateway:latest
+          imagePullPolicy: Always
+          env:
+            - name: KNJIGE_SERVICE_URL
+              value: http://knjige-service:8000
+            - name: IZPOSOJA_SERVICE_URL
+              value: http://izposoja-service:8082
+          ports:
+            - containerPort: 8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mobile-gateway
+spec:
+  selector:
+    app: mobile-gateway
+  ports:
+    - port: 8001
+      targetPort: 8001

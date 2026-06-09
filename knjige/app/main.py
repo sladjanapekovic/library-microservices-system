@@ -5,10 +5,12 @@ from sqlalchemy.orm import Session
 
 from .database import Base, engine, SessionLocal
 from . import schemas, repository
+from app.database import Base, engine, wait_for_database
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+wait_for_database()
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(

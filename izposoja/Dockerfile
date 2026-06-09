@@ -11,7 +11,7 @@ FROM eclipse-temurin:17
 
 WORKDIR /app
 
-COPY --from=build /app/target/izposoja-1.0.0.jar app.jar
+COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8082
 

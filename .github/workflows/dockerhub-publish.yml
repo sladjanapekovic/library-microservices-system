@@ -27,6 +27,10 @@ jobs:
             context: ./web-gateway
             image: web-gateway
 
+          - name: mobile-gateway
+            context: ./mobile-gateway
+            image: mobile-gateway
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

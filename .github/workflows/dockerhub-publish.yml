@@ -21,7 +21,11 @@ jobs:
 
           - name: uporabniki
             context: ./uporabniki
-            image: uporabniki-service      
+            image: uporabniki-service  
+            
+          - name: izposoja
+            context: ./izposoja
+            image: izposoja-service
 
     steps:
       - name: Checkout repository

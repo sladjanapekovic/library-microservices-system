@@ -14,14 +14,14 @@ spec:
     spec:
       containers:
         - name: knjige-postgres
-          image: postgres:15
+          image: bitnami/postgresql:15
           env:
-            - name: POSTGRES_USER
-              value: postgres
-            - name: POSTGRES_PASSWORD
-              value: postgres
-            - name: POSTGRES_DB
-              value: knjige_db
+  - name: POSTGRESQL_USERNAME
+    value: postgres
+  - name: POSTGRESQL_PASSWORD
+    value: postgres
+  - name: POSTGRESQL_DATABASE
+    value: knjige_db
           ports:
             - containerPort: 5432
 ---
